@@ -1,0 +1,61 @@
+h1. Overview:
+
+Misty is an asynchronous and multiprocessing IRC Bot that aims to be:
+* Easily extendable with user based modules called Isles.
+* Powerful message distribution resembling Django's URL dispatcher aka Lighthouse.
+* Quick, Friendly, and as non IRC Botty as possible.
+
+Misty was inspired by "Phenny":http://inamidst.com/phenny/,
+and "DjangoBot":https://code.djangoproject.com/wiki/DjangoBot.
+
+h1. Coming Soon:
+
+* Proper logging & searching via Django.
+* Join multiple channels.
+* More Core Isles.
+* Better Lighthouse control.
+
+h1. Requirements:
+
+* "Twisted":http://twistedmatrix.com/
+* "PostgreSQL":http://www.postgresql.org/
+* "pyPgSQL":http://pypgsql.sourceforge.net/
+* Misty has only been tested on OSX 10.6 and python 2.6
+
+h1. Installation:
+
+# Clone repo in desired directory.
+# Duplicate and rename Misty/settings.py to settings_local.py
+# Change Misty/settings_local.py to match your database & IRC server.
+# Type @python Misty/misty_core.py@ in cmd line to start Misty.
+
+h1. Extending:
+
+# Make a IsleName.py in the directory you set with PATH_TO_ISLES in Misty/settings.py
+# Make sure the IsleName.py has execute permission.
+# Make sure IsleName.py has @#!/usr/bin/env python@
+# Edit Misty/lighthouse.py to include your new Isle.
+# If Misty is running, reload the list of Isles with @{nickname}:reload@ in IRC
+
+h1. License
+
+Copyright (C) 2011 Michael Ranieri <michael.d.ranieri at gmail.com>
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
