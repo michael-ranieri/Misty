@@ -10,10 +10,9 @@ and "DjangoBot":https://code.djangoproject.com/wiki/DjangoBot.
 
 h1. Coming Soon:
 
-* Proper logging & searching via Django.
+* Searching via Django.
 * Join multiple channels.
 * More Core Isles.
-* Better Lighthouse control.
 
 h1. Requirements:
 
