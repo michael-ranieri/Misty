@@ -8,7 +8,7 @@ from twisted.python import log
 from twisted.enterprise import adbapi
 
 # System imports
-import time, sys, random, os, re
+import time, sys, random, os, re, json
 
 # Misty Imports
 import lighthouse
@@ -43,6 +43,7 @@ class Misty(irc.IRCClient):
     
     nickname = settings.NICKNAME    # nickname for Misty in irc channel
     password = settings.PASSWORD    # password to join irc server
+    users = {}
     
     def connectionMade(self):
         irc.IRCClient.connectionMade(self)
@@ -60,12 +61,27 @@ class Misty(irc.IRCClient):
     
     def signedOn(self):
         """Called when Misty has successfully signed on to a server."""
+        print 'Connected to server'
         self.join(self.factory.channel)
         
     def joined(self, channel):
         """Called when Misty has joined a channel."""
+        self.who()
         msg = "Hi! I'm Misty. Nice to meet all of you!"
-        self.msg(channel, msg)      
+        self.msg(channel, msg)
+        
+    def userJoined(self, user, channel):
+        """Called when another user joins the channel"""
+        self.users[user] = 'H'
+        
+    def userLeft(self, user, channel):
+        """Called when another user leaves the channel"""
+        self.users[user] = 'G'
+        
+    def userRenamed(self, oldname, newname):
+        """Called when another user changes their name"""
+        self.users[oldname] = 'G'
+        self.users[newname] = 'H'
         
     def privmsg(self, user, channel, msg):
         """This will get called when the bot receives a message from IRC server."""
@@ -92,10 +108,14 @@ class Misty(irc.IRCClient):
             self.msg(channel, msg)
             return
         
+        # params is sent as a tuple to lighthouse and as a json string to the Isles
+        # In your Isle you must json.loads(sys.argv[1]) in order to get the params below
+        params = (msg, user, channel, self.users)
+        
         # Check to see if message should be sent to an isle
         # Isles must return a tuple (bool, string, string)
         for isle in self.isles:
-            goto, location, filename = isle(msg, user, channel)
+            goto, location, filename = isle(params)
             if goto == True and filename != None and location != None:
                 
                 # Initialize Process Controller
@@ -104,11 +124,18 @@ class Misty(irc.IRCClient):
                 p = reactor.spawnProcess(
                     MistyProcess,                       # Process Controller
                     settings.PATH_TO_ISLES + location,  # Full Path of Isle
-                    [filename, msg, user, channel],     # Filename of Isle
+                    [filename, json.dumps(params)],     # Filename of Isle, JSON parameters
                     {'HOME': os.environ['HOME']})       # ENV to run Isle
                  
                 isleResult = MistyProcess.deferred
                 isleResult.addCallback(self.callbackMessage, channel)
+                
+    # Twisted command extension
+    def who(self):
+        self.sendLine('WHO *')
+        
+    def irc_RPL_WHOREPLY(self, prefix, params):
+        self.users[params[5]] = params[6]
                 
     # method to switch callbacks argument ordering
     def callbackMessage(self, msg, channel):

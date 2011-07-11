@@ -7,7 +7,7 @@ Licensed under the Eiffel Forum License 2.
 http://inamidst.com/phenny/
 """
 
-import re, web, sys
+import re, web, sys, json
 
 def search(query): 
    """Search using AjaxSearch, and return its JSON."""
@@ -72,15 +72,17 @@ def gcs(input):
 gcs.commands = ['gcs', 'comp']
 
 if __name__ == '__main__':
+   params = json.loads(sys.argv[1])
+   msg, user, channel, users = params
    
    r_query = re.compile(
    r'\+?"[^"\\]*(?:\\.[^"\\]*)*"|\[[^]\\]*(?:\\.[^]\\]*)*\]|\S+'
    )
    
-   command = re.split(' ', sys.argv[1])[0]
+   command = re.split(' ', msg)[0]
    if command == '.g':
-      g(sys.argv[1])
+      g(msg)
    elif command == '.gc':
-      gc(sys.argv[1])
+      gc(msg)
    elif command == '.gcs':
-      gcs(sys.argv[1])
+      gcs(msg)
