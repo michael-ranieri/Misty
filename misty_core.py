@@ -18,7 +18,7 @@ import settings_local as settings
 # END OF IMPORTS
 
 def _getMessage(txn, arg):
-    txn.execute("SELECT * FROM Messages WHERE %s") % arg
+    txn.execute("SELECT * FROM Messages WHERE %s" % arg)
     result = txn.fetchall()
     if result:
         return result
@@ -35,6 +35,7 @@ def _setMessage(txn, message, user, channel, id):
     
 # Store a message into PostgreSQL Asynchronously
 def setMessage(message, user, channel, id):
+    log.msg('%s -- %s: %s' % (channel, user, message))
     return cp.runInteraction(_setMessage, message, user, channel, id)
     
 # Main class for Misty Bot. Handles messages, connections, etc.
@@ -46,6 +47,7 @@ class Misty(irc.IRCClient):
     users = {}
     
     def connectionMade(self):
+        log.msg('Connected to server')
         irc.IRCClient.connectionMade(self)
         self.reload()
         
@@ -54,6 +56,7 @@ class Misty(irc.IRCClient):
     
     # Reloads the lighthouse module, which points to the isles.
     def reload(self):
+        log.msg('Reloading lighthouse')
         reload(lighthouse)
         self.isles = lighthouse.isles
         
@@ -61,25 +64,28 @@ class Misty(irc.IRCClient):
     
     def signedOn(self):
         """Called when Misty has successfully signed on to a server."""
-        print 'Connected to server'
         self.join(self.factory.channel)
         
     def joined(self, channel):
         """Called when Misty has joined a channel."""
+        log.msg('Connected to channel %s' % channel)
         self.who()
         msg = "Hi! I'm Misty. Nice to meet all of you!"
         self.msg(channel, msg)
         
     def userJoined(self, user, channel):
         """Called when another user joins the channel"""
+        log.msg('%s joined %s' % (user, channel))
         self.users[user] = 'H'
         
     def userLeft(self, user, channel):
         """Called when another user leaves the channel"""
+        log.msg('%s left %s' % (user, channel))
         self.users[user] = 'G'
         
     def userRenamed(self, oldname, newname):
         """Called when another user changes their name"""
+        log.msg('%s changed name to %s' % (oldname, newname))
         self.users[oldname] = 'G'
         self.users[newname] = 'H'
         
@@ -118,6 +124,9 @@ class Misty(irc.IRCClient):
             goto, location, filename = isle(params)
             if goto == True and filename != None and location != None:
                 
+                log.msg('Sending msg to Isle at:')
+                log.msg(location)
+                
                 # Initialize Process Controller
                 MistyProcess = MistyProcessController()
                 
@@ -132,9 +141,11 @@ class Misty(irc.IRCClient):
                 
     # Twisted command extension
     def who(self):
+        log.msg('Grabbing list of users')
         self.sendLine('WHO *')
         
     def irc_RPL_WHOREPLY(self, prefix, params):
+        log.msg(params)
         self.users[params[5]] = params[6]
                 
     # method to switch callbacks argument ordering
@@ -158,14 +169,16 @@ class MistyFactory(protocol.ClientFactory):
         
     def startedConnecting(self, connector):
         """Called when Misty is trying to connect to server"""
-        print "Trying to connect"
+        log.msg("Trying to connect to IRC server")
         
     def clientConnectionLost(self, connector, reason):
         """If Misty gets disconnecte, reconnect to server."""
+        log.msg('Connection lost to IRC server. Will try to reconnect.')
         connector.connect()
         
     def clientConnectionFailed(self, connector, reason):
-        print "Could not connect to server:", reason
+        log.msg("Could not connect to server:")
+        log.msg(reason)
         reactor.stop()
         
 # Controls the subprocess for each Isle
@@ -180,6 +193,7 @@ class MistyProcessController(protocol.ProcessProtocol):
     # Misty sends msg through arg instead of Stdin
     # so we immediately tell the process to close Stdin
     def connectionMade(self):
+        log.msg('Connection made to subprocess')
         self.transport.closeStdin()
 
     # outRecieved() is called with the output from each Isle process.
@@ -201,19 +215,21 @@ class MistyProcessController(protocol.ProcessProtocol):
     # This is called when the Isle process has closed the error output.
     def errConnectionLost(self):
         if self.errors != "":
-            print "Errors:"
-            print self.errors
+            log.err(self.errors)
     
     def processExited(self, reason):
         pass
     
     # This is called after the Isle process has ended
     def processEnded(self, reason):
+        log.msg('Subprocess Ended:')
+        log.msg(reason)
         self.deferred.callback(self.data)
     
 
 if __name__ == '__main__':
     
+    log.startLogging(open('misty.log', 'w'))
     # create factory protocol and application 
     mf = MistyFactory(settings.CHANNEL)
     
