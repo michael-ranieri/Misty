@@ -5,6 +5,9 @@
 # Duplicate this file and rename it as settings_local.py with your changed settings.
 # DATABASE must be postgreSQL due to asynchronous calls and the use of pyPgSQL library
 
+# If set to False, Misty will not store any messages in database
+USE_DATABASE = False
+
 # Name of database
 DATABASE_NAME = "Misty"
 
@@ -26,11 +29,19 @@ SERVER = "irc.someserver.com"
 # Port to connect through
 PORT = 6667
 
-# Password for IRC Server
-PASSWORD = "some_irc_password"
+# Password for IRC Server Ex. "some_irc_password"
+PASSWORD = None
 
 # Channel to join once connected
 CHANNEL = "#somechannel"
 
 # Path to isles folder (absolute)
 PATH_TO_ISLES = "/Users/SomeUser/Misty/isles/"
+
+
+# API KEYS
+
+# Pingdom
+PINGDOM_KEY = None
+PINGDOM_USER = None
+PINGDOM_PASSWORD = None

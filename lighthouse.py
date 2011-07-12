@@ -2,24 +2,29 @@
 # Copyright (C) 2011 Michael Ranieri <michael.d.ranieri at gmail.com>
 
 # input to methods will be a tuple (Message from irc, user who sent msg, channel, known channel users)
-# Must return a tuple (bool, string, string)
-# bool is whether or not you want to send this particular message to your Isle for processing
+# Must return a location or None
 # The first string is the relative location of the isle from the settings.PATH_TO_ISLE
-# The second string is the filename of the isle.
+# return None when you don't want the Isle to be called
 
 # NOTE: some messages beginning with {nickname}: are reserved for internal functions
 # Try to avoid using {nickname}: so you don't have any name conflicts with internal functions
 
+# System imports
 import re
+
+# Misty imports
+import settings_local as settings
+
+# Core Isles
 
 # Calculates user input
 def calculate(params):
     msg, user, channel, users = params
     
     if msg.startswith('.c'):
-        return (True, "core/calculate.py", "calculate.py")
+        return "core/calculate.py"
     else:
-        return (False, None, None)
+        return None
         
 # Searches google and returns top hit
 def search(params):
@@ -28,21 +33,32 @@ def search(params):
     if msg.startswith('.g') \
     or msg.startswith('.gc') \
     or msg.startswith('.gcs'):
-        return (True, "core/search.py", "search.py")
+        return "core/search.py"
     else:
-        return (False, None, None)
+        return None
         
 # Tells a message to another user when they log in or return from away
 def store_tell(params):
     msg, user, channel, users = params
 
-    if re.match('([\w-]+): .+', msg) != None:
-        return(True, "core/store_tell.py", "store_tell.py")
+    if re.match('([\w-]+): .+', msg):
+        return "core/store_tell.py"
     else:
-        return(False, None, None)
+        return None
         
 def send_tell(params):
-    return(True, "core/send_tell.py", "send_tell.py")
+    return "core/send_tell.py"
+    
+# API Isles (Require an api key from respective companies)
+
+# Checks Pingdom status of servers.
+def pingdom(params):
+    msg, user, channel, users = params
+    
+    if re.search('pingdom', msg, re.IGNORECASE) and settings.PINGDOM_KEY:
+        return "api/pingdom.py"
+    else:
+        return None
         
 # Example Isles
 
@@ -50,19 +66,19 @@ def send_tell(params):
 def subprocess(params):
     msg, user, channel, users = params
     
-    if re.search('example', msg) != None:
-        return (True, "examples/subprocess.py", "subprocess.py")
+    if re.search('example', msg, re.IGNORECASE):
+        return "examples/subprocess.py"
     else:
-        return(False, None, None)
+        return None
 
 # Echo the json parameters that would be sent to an Isle
 def json_arg(params):
     msg, user, channel, users = params
     
-    if re.search('example', msg) != None:
-        return (True, "examples/json_arg.py", "json_arg.py")
+    if re.search('example', msg, re.IGNORECASE):
+        return "examples/json_arg.py"
     else:
-        return(False, None, None)
+        return None
     
 isles = [
     calculate,
@@ -71,4 +87,5 @@ isles = [
     json_arg,
     store_tell,
     send_tell,
+    pingdom,
 ]

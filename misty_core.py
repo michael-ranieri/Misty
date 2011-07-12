@@ -14,8 +14,9 @@ import time, sys, random, os, re, json
 import lighthouse
 import settings_local as settings
 
-
 # END OF IMPORTS
+
+
 
 def _getMessage(txn, arg):
     txn.execute("SELECT * FROM Messages WHERE %s" % arg)
@@ -43,7 +44,8 @@ class Misty(irc.IRCClient):
     """A asynchronous IRC Bot."""
     
     nickname = settings.NICKNAME    # nickname for Misty in irc channel
-    password = settings.PASSWORD    # password to join irc server
+    if settings.PASSWORD:
+        password = settings.PASSWORD    # password to join irc server
     users = {}
     
     def connectionMade(self):
@@ -100,7 +102,8 @@ class Misty(irc.IRCClient):
         id = timestamp + "!" + randint
         
         # Stores the current message into PostgreSQL
-        setMessage(msg, user, channel, id)
+        if settings.USE_DATABASE:
+            setMessage(msg, user, channel, id)
         
         # Reload lighthouse
         if msg.startswith(self.nickname + ":reload"):
@@ -119,11 +122,14 @@ class Misty(irc.IRCClient):
         params = (msg, user, channel, self.users)
         
         # Check to see if message should be sent to an isle
-        # Isles must return a tuple (bool, string, string)
+        # Isles must return location or None
         for isle in self.isles:
-            goto, location, filename = isle(params)
-            if goto == True and filename != None and location != None:
-                
+            
+            location = isle(params)
+            if location != None:
+            
+                filename = re.search('([^/]+)$', location).group(0)
+            
                 log.msg('Sending msg to Isle at:')
                 log.msg(location)
                 
@@ -134,7 +140,7 @@ class Misty(irc.IRCClient):
                     MistyProcess,                       # Process Controller
                     settings.PATH_TO_ISLES + location,  # Full Path of Isle
                     [filename, json.dumps(params)],     # Filename of Isle, JSON parameters
-                    {'HOME': os.environ['HOME']})       # ENV to run Isle
+                    env = _env)                         # ENV to run Isle
                  
                 isleResult = MistyProcess.deferred
                 isleResult.addCallback(self.callbackMessage, channel)
@@ -229,17 +235,30 @@ class MistyProcessController(protocol.ProcessProtocol):
 
 if __name__ == '__main__':
     
+    # Allows passing a modified PYTHONPATH to child process
+    _env = dict(os.environ)
+    _dir = os.path.join(os.path.dirname(__file__))
+    try:
+        temp = _env['PYTHONPATH']
+        temp += ':'
+    except:
+        temp = ""
+    _env['PYTHONPATH'] = str(temp) + str(_dir)
+    
+    # Open file for logging
     log.startLogging(open('misty.log', 'w'))
+    
     # create factory protocol and application 
     mf = MistyFactory(settings.CHANNEL)
     
-    # create connection pool for misty to log messages to database
-    cp = adbapi.ConnectionPool("pyPgSQL.PgSQL",
-                               None,
-                               settings.DATABASE_USER,
-                               settings.DATABASE_PASSWORD,
-                               settings.DATABASE_URL,
-                               settings.DATABASE_NAME)
+    if settings.USE_DATABASE == True:
+        # create connection pool for misty to log messages to database
+        cp = adbapi.ConnectionPool("pyPgSQL.PgSQL",
+                                   None,
+                                   settings.DATABASE_USER,
+                                   settings.DATABASE_PASSWORD,
+                                   settings.DATABASE_URL,
+                                   settings.DATABASE_NAME)
     
     # connect factory to this host and port
     reactor.connectTCP(settings.SERVER,
