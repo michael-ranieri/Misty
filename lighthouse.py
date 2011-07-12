@@ -59,6 +59,24 @@ def pingdom(params):
         return "api/pingdom.py"
     else:
         return None
+    
+# Searches rackspace for msg terms and returns more information about server
+def rackspace(params):
+    msg, user, channel, users = params
+    
+    if re.search('rackspace', msg, re.IGNORECASE) and settings.RACKSPACE_KEY:
+        return "api/rackspace.py"
+    else:
+        return None
+
+# Searches Pivotal Tracker project for stories in msg and return a url to it
+def pivotalTracker(params):
+    msg, user, channel, users = params
+    
+    if re.search('pivotal', msg, re.IGNORECASE) and settings.PIVOTAL_KEY:
+        return "api/pivotalTracker.py"
+    else:
+        return None
         
 # Example Isles
 
@@ -80,6 +98,7 @@ def json_arg(params):
     else:
         return None
     
+# Make sure to add your Isle method to isles[] 
 isles = [
     calculate,
     search,
@@ -88,4 +107,6 @@ isles = [
     store_tell,
     send_tell,
     pingdom,
+    rackspace,
+    pivotalTracker,
 ]

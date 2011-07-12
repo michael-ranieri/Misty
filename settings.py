@@ -45,3 +45,11 @@ PATH_TO_ISLES = "/Users/SomeUser/Misty/isles/"
 PINGDOM_KEY = None
 PINGDOM_USER = None
 PINGDOM_PASSWORD = None
+
+# Rackspace
+RACKSPACE_KEY = None
+RACKSPACE_USER = None
+
+# Pivotal Tracker
+PIVOTAL_KEY = None
+PIVOTAL_PROJECT = None
