@@ -80,6 +80,15 @@ def pivotalTracker(params):
         
 # Example Isles
 
+# Responds when someone says misty
+def mistyComment(params):
+    msg, user, channel, users = params
+    
+    if re.search('misty', msg, re.IGNORECASE):
+        return "examples/mistyComment.py"
+    else:
+        return None
+
 # Echo a message 10 seconds later
 def subprocess(params):
     msg, user, channel, users = params
@@ -102,8 +111,9 @@ def json_arg(params):
 isles = [
     calculate,
     search,
-    subprocess,
-    json_arg,
+    #mistyComment,
+    #subprocess,
+    #json_arg,
     store_tell,
     send_tell,
     pingdom,
