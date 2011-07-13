@@ -19,6 +19,8 @@ import settings_local as settings
 
 # Calculates user input
 def calculate(params):
+    """'.c' || Calculates any argument after '.c'"""
+    
     msg, user, channel, users = params
     
     if msg.startswith('.c'):
@@ -28,6 +30,8 @@ def calculate(params):
         
 # Searches google and returns top hit
 def search(params):
+    """'.g' or '.gc' or '.gcs' || Searches google with any argument after command."""
+    
     msg, user, channel, users = params
     
     if msg.startswith('.g') \
@@ -39,6 +43,8 @@ def search(params):
         
 # Tells a message to another user when they log in or return from away
 def store_tell(params):
+    """'offline_user: message' || Stores a message to give to offline user."""
+    
     msg, user, channel, users = params
 
     if re.match('([\w-]+): .+', msg):
@@ -53,6 +59,7 @@ def send_tell(params):
 
 # Checks Pingdom status of servers.
 def pingdom(params):
+    """*pingdom* || Returns the status of Pingdom checks."""
     msg, user, channel, users = params
     
     if re.search('pingdom', msg, re.IGNORECASE) and settings.PINGDOM_KEY:
@@ -62,6 +69,8 @@ def pingdom(params):
     
 # Searches rackspace for msg terms and returns more information about server
 def rackspace(params):
+    """*rackspace* & (*ip* or *name*) || Return information about rackspace server."""
+    
     msg, user, channel, users = params
     
     if re.search('rackspace', msg, re.IGNORECASE) and settings.RACKSPACE_KEY:
@@ -71,6 +80,8 @@ def rackspace(params):
 
 # Searches Pivotal Tracker project for stories in msg and return a url to it
 def pivotalTracker(params):
+    """*pivotal* *terms* || Return the Pivotal Tracker URL of the best match story."""
+    
     msg, user, channel, users = params
     
     if re.search('pivotal', msg, re.IGNORECASE) and settings.PIVOTAL_KEY:
@@ -82,6 +93,7 @@ def pivotalTracker(params):
 
 # Responds when someone says misty
 def mistyComment(params):
+    
     msg, user, channel, users = params
     
     if re.search('misty', msg, re.IGNORECASE):
@@ -91,6 +103,7 @@ def mistyComment(params):
 
 # Echo a message 10 seconds later
 def subprocess(params):
+    
     msg, user, channel, users = params
     
     if re.search('example', msg, re.IGNORECASE):
@@ -100,6 +113,7 @@ def subprocess(params):
 
 # Echo the json parameters that would be sent to an Isle
 def json_arg(params):
+    
     msg, user, channel, users = params
     
     if re.search('example', msg, re.IGNORECASE):

@@ -119,10 +119,18 @@ class Misty(irc.IRCClient):
             self.reload()
             return
         
+        # Credit
         if msg.startswith(self.nickname + ":"):
             msg = "%s: Hi, I'm %s. Michael Ranieri created me." % (user, self.nickname)
             self.msg(channel, msg)
             return
+        
+        # Display Help from lighthouse method doc.
+        if re.search('help', msg, re.IGNORECASE):
+            self.msg(user, "Requirements of message || Result of Isle")
+            for isle in self.isles:
+                if isle.__doc__:
+                    self.msg(user, isle.__doc__)
         
         # params is sent as a tuple to lighthouse and as a json string to the Isles
         # In your Isle you must json.loads(sys.argv[1]) in order to get the params below
