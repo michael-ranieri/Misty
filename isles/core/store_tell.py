@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 # Copyright (C) 2011 Michael Ranieri <michael.d.ranieri at gmail.com>
 
-import sys, json, re, shelve
+import sys
+import json
+import re
+import shelve
+
 
 def main(params):
     msg, user, channel, users = params
@@ -27,6 +31,7 @@ def main(params):
     db.close()
     
     print "Don't worry %s! I will make sure to give %s that message." % (user, receiver)
+    
 
 if __name__ == '__main__':
     params = json.loads(sys.argv[1])

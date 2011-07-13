@@ -2,10 +2,14 @@
 # Copyright (C) 2011 Michael Ranieri <michael.d.ranieri at gmail.com>
 
 # System imports
-import urllib2, json, sys, re
+import urllib2
+import json
+import sys
+import re
 
 # Misty imports
 import settings_local as settings
+
 
 def printMatch(server):
     print "Rackspace server %s has the Public IP(s):" % server['name']

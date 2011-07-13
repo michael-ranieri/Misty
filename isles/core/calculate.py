@@ -11,7 +11,11 @@ http://inamidst.com/phenny/
 
 # MODIFIED FROM FILE ABOVE TO WORK WITH MISTY
 
-import sys, re, web, json
+import sys
+import re
+import web
+import json
+
 
 def c(input): 
    """Google calculator."""
@@ -31,6 +35,7 @@ def c(input):
       answer = web.decode(answer)
       print answer.encode('utf-8')
    else: print 'Sorry, no result.'
+   
 
 if __name__ == '__main__':
    params = json.loads(sys.argv[1])

@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # Copyright (C) 2011 Michael Ranieri <michael.d.ranieri at gmail.com>
 
-import time, sys, json
+import time
+import sys
+import json
+
 params = json.loads(sys.argv[1])
 msg, user, channel, users = params
 

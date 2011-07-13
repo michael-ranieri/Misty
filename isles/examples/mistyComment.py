@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # Copyright (C) 2011 Michael Ranieri <michael.d.ranieri at gmail.com>
 
-import sys, json, random
+import sys
+import json
+import random
+
 
 def main(user):
     responses = [
@@ -27,6 +30,7 @@ def main(user):
     choice = random.choice(responses)
     
     print choice % user
+    
 
 if __name__ == '__main__':
     params = json.loads(sys.argv[1])

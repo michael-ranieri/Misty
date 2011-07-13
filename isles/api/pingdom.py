@@ -2,10 +2,13 @@
 # Copyright (C) 2011 Michael Ranieri <michael.d.ranieri at gmail.com>
 
 # System imports
-import urllib2, json, base64
+import urllib2
+import json
+import base64
 
 # Misty imports
 import settings_local as settings
+
 
 def allChecks(iterable):
     for i in iterable:
@@ -43,6 +46,7 @@ def main():
         for check in checks:
             if check['status'] == 'down':
                 print check['name'] + ' || ' + check['status']
+                
 
 if __name__ == '__main__':
     main()

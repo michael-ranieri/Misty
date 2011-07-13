@@ -1,21 +1,23 @@
 #!/usr/bin/env python
 # Copyright (C) 2011 Michael Ranieri <michael.d.ranieri at gmail.com>
 
+# System imports
+import time
+import sys
+import random
+import os
+import re
+import json
+
 # Twisted imports
 from twisted.words.protocols import irc
 from twisted.internet import reactor, protocol, defer
 from twisted.python import log
 from twisted.enterprise import adbapi
 
-# System imports
-import time, sys, random, os, re, json
-
 # Misty Imports
 import lighthouse
 import settings_local as settings
-
-# END OF IMPORTS
-
 
 
 def _getMessage(txn, arg):
@@ -26,18 +28,22 @@ def _getMessage(txn, arg):
     else:
         return None
     
+    
 # Get a message from PostgreSQL Asynchronously
 def getMessage(arg):
     return cp.runInteraction(_getMessage, arg)
     
+    
 def _setMessage(txn, message, user, channel, id):
     txn.execute('INSERT INTO Messages VALUES (%s, %s, %s, %s)', (message, user, channel, id))
     return
+
     
 # Store a message into PostgreSQL Asynchronously
 def setMessage(message, user, channel, id):
     log.msg('%s -- %s: %s' % (channel, user, message))
     return cp.runInteraction(_setMessage, message, user, channel, id)
+    
     
 # Main class for Misty Bot. Handles messages, connections, etc.
 class Misty(irc.IRCClient):
@@ -46,6 +52,7 @@ class Misty(irc.IRCClient):
     nickname = settings.NICKNAME    # nickname for Misty in irc channel
     if settings.PASSWORD:
         password = settings.PASSWORD    # password to join irc server
+        
     users = {}
     
     def connectionMade(self):
@@ -126,7 +133,7 @@ class Misty(irc.IRCClient):
         for isle in self.isles:
             
             location = isle(params)
-            if location != None:
+            if location:
             
                 filename = re.search('([^/]+)$', location).group(0)
             
@@ -156,8 +163,7 @@ class Misty(irc.IRCClient):
                 
     # method to switch callbacks argument ordering
     def callbackMessage(self, msg, channel):
-        self.msg(channel,msg)
-                 
+        self.msg(channel,msg)  
             
     
 # Creates instances of Misty for each connection
@@ -186,6 +192,7 @@ class MistyFactory(protocol.ClientFactory):
         log.msg("Could not connect to server:")
         log.msg(reason)
         reactor.stop()
+        
         
 # Controls the subprocess for each Isle
 class MistyProcessController(protocol.ProcessProtocol):
@@ -251,7 +258,7 @@ if __name__ == '__main__':
     # create factory protocol and application 
     mf = MistyFactory(settings.CHANNEL)
     
-    if settings.USE_DATABASE == True:
+    if settings.USE_DATABASE:
         # create connection pool for misty to log messages to database
         cp = adbapi.ConnectionPool("pyPgSQL.PgSQL",
                                    None,

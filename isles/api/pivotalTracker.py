@@ -2,11 +2,16 @@
 # Copyright (C) 2011 Michael Ranieri <michael.d.ranieri at gmail.com>
 
 # System imports
-import sys, json, urllib2, re, string
+import sys
+import json
+import urllib2
+import re
+import string
 from xml.dom import minidom
 
 # Misty imports
 import settings_local as settings
+
 
 def main(params):
     msg, user, channel, users = params
@@ -53,6 +58,7 @@ def main(params):
 
     if len(stories) > 0 and stories[0] > 0:
         print stories[0]['url']
+        
         
 if __name__ == '__main__':
     params = json.loads(sys.argv[1])
