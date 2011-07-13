@@ -41,6 +41,13 @@ PATH_TO_ISLES = "/Users/SomeUser/Misty/isles/"
 
 # API KEYS
 
+# Lighthouse Tracker
+LIGHTHOUSE_KEY = None
+LIGHTHOUSE_PROJECT_URL = [
+    'http://company.lighthouseapp.com/projects/a-project',
+    'http://company.lighthouseapp.com/projects/b-project',
+]
+
 # Pingdom
 PINGDOM_KEY = None
 PINGDOM_USER = None

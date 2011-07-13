@@ -57,9 +57,23 @@ def send_tell(params):
     
 # API Isles (Require an api key from respective companies)
 
+# Checks for bugs on Lighthouse Issue Tracking
+def lighthouse(params):
+    """*lighthouse* or *bug* || Return the Lighthouse Tracker URL of the best match."""
+    
+    msg, user, channel, users = params
+    
+    if (re.search('bug', msg, re.IGNORECASE) \
+    or re.search('lighthouse', msg, re.IGNORECASE)) \
+    and settings.LIGHTHOUSE_KEY:
+        return "api/lighthouseTracking.py"
+    else:
+        return None
+
 # Checks Pingdom status of servers.
 def pingdom(params):
     """*pingdom* || Returns the status of Pingdom checks."""
+    
     msg, user, channel, users = params
     
     if re.search('pingdom', msg, re.IGNORECASE) and settings.PINGDOM_KEY:
@@ -125,12 +139,13 @@ def json_arg(params):
 isles = [
     calculate,
     search,
-    #mistyComment,
-    #subprocess,
-    #json_arg,
     store_tell,
     send_tell,
+    lighthouse,
     pingdom,
     rackspace,
     pivotalTracker,
+    #mistyComment,
+    #subprocess,
+    #json_arg,
 ]

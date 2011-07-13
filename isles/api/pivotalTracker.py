@@ -37,15 +37,15 @@ def main(params):
 
         for s in temp:
             stories.append({
-                'name'              : string.lower(s.getElementsByTagName('name')[0].firstChild.data),
-                'url'               : string.lower(s.getElementsByTagName('url')[0].firstChild.data),
+                'name'              : s.getElementsByTagName('name')[0].firstChild.data,
+                'url'               : s.getElementsByTagName('url')[0].firstChild.data,
                 'score'             : 0,
                 'iteration'         : i.getElementsByTagName('number')[0].firstChild.data
             })
 
     for s in stories:
         for term in searchTerms:
-            if re.search('%s' % term, s['name']):
+            if re.search(term, s['name'], re.IGNORECASE):
                 s['score'] += 1
 
     def sortScore(story):
@@ -56,7 +56,7 @@ def main(params):
     stories.sort(key=sortStatus, reverse=True)
     stories.sort(key=sortScore, reverse=True)
 
-    if len(stories) > 0 and stories[0] > 0:
+    if len(stories) > 0 and stories[0]['score'] > 0:
         print stories[0]['url']
         
         

@@ -235,8 +235,7 @@ class MistyProcessController(protocol.ProcessProtocol):
     
     # This is called when the Isle process has closed the error output.
     def errConnectionLost(self):
-        if self.errors != "":
-            log.err(self.errors)
+        pass
     
     def processExited(self, reason):
         pass
@@ -245,6 +244,10 @@ class MistyProcessController(protocol.ProcessProtocol):
     def processEnded(self, reason):
         log.msg('Subprocess Ended:')
         log.msg(reason)
+        
+        if self.errors != "":
+            log.err(self.errors)
+        
         self.deferred.callback(self.data)
     
 
