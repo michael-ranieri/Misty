@@ -35,8 +35,8 @@ PASSWORD = None
 # Channel to join once connected
 CHANNEL = "#somechannel"
 
-# Path to isles folder (absolute)
-PATH_TO_ISLES = "/Users/SomeUser/Misty/isles/"
+# Path to Misty folder (absolute)
+PATH_TO_MISTY = "/Users/SomeUser/Misty"
 
 
 # API KEYS

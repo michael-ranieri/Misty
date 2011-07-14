@@ -13,6 +13,7 @@ import json
 from twisted.words.protocols import irc
 from twisted.internet import reactor, protocol, defer
 from twisted.python import log
+from twisted.python.logfile import DailyLogFile
 from twisted.enterprise import adbapi
 
 # Misty Imports
@@ -108,6 +109,8 @@ class Misty(irc.IRCClient):
         timestamp = str(int(time.time()))
         id = timestamp + "!" + randint
         
+        log.msg(channel + ' ' + user + ' ' + id + ' ' + msg)
+        
         # Stores the current message into PostgreSQL
         if settings.USE_DATABASE:
             setMessage(msg, user, channel, id)
@@ -153,7 +156,7 @@ class Misty(irc.IRCClient):
                 
                 p = reactor.spawnProcess(
                     MistyProcess,                       # Process Controller
-                    settings.PATH_TO_ISLES + location,  # Full Path of Isle
+                    settings.PATH_TO_MISTY + '/isles/' + location,  # Full Path of Isle
                     [filename, json.dumps(params)],     # Filename of Isle, JSON parameters
                     env = _env)                         # ENV to run Isle
                  
@@ -246,7 +249,7 @@ class MistyProcessController(protocol.ProcessProtocol):
         log.msg(reason)
         
         if self.errors != "":
-            log.err(self.errors)
+            log.msg(self.errors)
         
         self.deferred.callback(self.data)
     
@@ -264,7 +267,7 @@ if __name__ == '__main__':
     _env['PYTHONPATH'] = str(temp) + str(_dir)
     
     # Open file for logging
-    log.startLogging(open('misty.log', 'w'))
+    log.startLogging(DailyLogFile.fromFullPath(settings.PATH_TO_MISTY + '/message_logs/today.log'))
     
     # create factory protocol and application 
     mf = MistyFactory(settings.CHANNEL)
