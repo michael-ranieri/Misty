@@ -252,7 +252,7 @@ class MistyProcessController(protocol.ProcessProtocol):
             log.msg(self.errors)
         
         self.deferred.callback(self.data)
-    
+        
 
 if __name__ == '__main__':
     
@@ -267,7 +267,7 @@ if __name__ == '__main__':
     _env['PYTHONPATH'] = str(temp) + str(_dir)
     
     # Open file for logging
-    log.startLogging(DailyLogFile.fromFullPath(settings.PATH_TO_MISTY + '/message_logs/today.log'))
+    log.startLogging(DailyLogFile.fromFullPath(settings.PATH_TO_MISTY + '/message_logs/misty.log'))
     
     # create factory protocol and application 
     mf = MistyFactory(settings.CHANNEL)
