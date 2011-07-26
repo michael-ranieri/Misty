@@ -17,8 +17,8 @@ h1. Coming Soon:
 h1. Requirements:
 
 * "Twisted":http://twistedmatrix.com/
-* "PostgreSQL":http://www.postgresql.org/
-* "pyPgSQL":http://pypgsql.sourceforge.net/
+* "PostgreSQL":http://www.postgresql.org/ (if you want to store messages in DB)
+* "pyPgSQL":http://pypgsql.sourceforge.net/ (if you want to store messages in DB)
 * Misty has only been tested on OSX 10.6 and python 2.6
 
 h1. Installation:
