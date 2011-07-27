@@ -8,6 +8,9 @@
 # If set to False, Misty will not store any messages in database
 USE_DATABASE = False
 
+# Database table to store messages
+DATABASE_TABLE = ""
+
 # Name of database
 DATABASE_NAME = "Misty"
 

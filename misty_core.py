@@ -22,7 +22,7 @@ import settings_local as settings
 
 
 def _getMessage(txn, arg):
-    txn.execute("SELECT * FROM Messages WHERE %s" % arg)
+    txn.execute("SELECT * FROM " + settings.DATABASE_TABLE + " WHERE %s" % arg)
     result = txn.fetchall()
     if result:
         return result
@@ -36,13 +36,13 @@ def getMessage(arg):
     
     
 def _setMessage(txn, message, user, channel, id):
-    txn.execute('INSERT INTO Messages VALUES (%s, %s, %s, %s)', (message, user, channel, id))
+    txn.execute("INSERT INTO " + settings.DATABASE_TABLE + " VALUES ('%s', '%s', %s, '%s', '%s')" \
+                % (id, user, 'now()', channel, message))
     return
 
     
 # Store a message into PostgreSQL Asynchronously
 def setMessage(message, user, channel, id):
-    log.msg('%s -- %s: %s' % (channel, user, message))
     return cp.runInteraction(_setMessage, message, user, channel, id)
     
     
