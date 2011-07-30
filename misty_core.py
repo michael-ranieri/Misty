@@ -21,31 +21,6 @@ import lighthouse
 import settings_local as settings
 
 
-def _getMessage(txn, arg):
-    txn.execute("SELECT * FROM " + settings.DATABASE_TABLE + " WHERE %s" % arg)
-    result = txn.fetchall()
-    if result:
-        return result
-    else:
-        return None
-    
-    
-# Get a message from PostgreSQL Asynchronously
-def getMessage(arg):
-    return cp.runInteraction(_getMessage, arg)
-    
-    
-def _setMessage(txn, message, user, channel, id):
-    txn.execute("INSERT INTO " + settings.DATABASE_TABLE + " VALUES ('%s', '%s', %s, '%s', '%s')" \
-                % (id, user, 'now()', channel, message))
-    return
-
-    
-# Store a message into PostgreSQL Asynchronously
-def setMessage(message, user, channel, id):
-    return cp.runInteraction(_setMessage, message, user, channel, id)
-    
-    
 # Main class for Misty Bot. Handles messages, connections, etc.
 class Misty(irc.IRCClient):
     """A asynchronous IRC Bot."""
@@ -110,10 +85,6 @@ class Misty(irc.IRCClient):
         id = timestamp + "!" + randint
         
         log.msg(channel + ' ' + user + ' ' + id + ' ' + msg)
-        
-        # Stores the current message into PostgreSQL
-        if settings.USE_DATABASE:
-            setMessage(msg, user, channel, id)
         
         # Reload lighthouse
         if msg.startswith(self.nickname + ":reload"):
@@ -271,15 +242,6 @@ if __name__ == '__main__':
     
     # create factory protocol and application 
     mf = MistyFactory(settings.CHANNEL)
-    
-    if settings.USE_DATABASE:
-        # create connection pool for misty to log messages to database
-        cp = adbapi.ConnectionPool("pyPgSQL.PgSQL",
-                                   None,
-                                   settings.DATABASE_USER,
-                                   settings.DATABASE_PASSWORD,
-                                   settings.DATABASE_URL,
-                                   settings.DATABASE_NAME)
     
     # connect factory to this host and port
     reactor.connectTCP(settings.SERVER,

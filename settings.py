@@ -5,24 +5,6 @@
 # Duplicate this file and rename it as settings_local.py with your changed settings.
 # DATABASE must be postgreSQL due to asynchronous calls and the use of pyPgSQL library
 
-# If set to False, Misty will not store any messages in database
-USE_DATABASE = False
-
-# Database table to store messages
-DATABASE_TABLE = ""
-
-# Name of database
-DATABASE_NAME = "Misty"
-
-# user who owns database
-DATABASE_USER = "postgres"
-
-# password to access database
-DATABASE_PASSWORD = "some_password"
-
-# URL to access database at
-DATABASE_URL = "localhost:5432"
-
 # nickname for Misty in IRC
 NICKNAME = "Misty"
 

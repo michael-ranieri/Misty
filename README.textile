@@ -17,15 +17,13 @@ h1. Coming Soon:
 h1. Requirements:
 
 * "Twisted":http://twistedmatrix.com/
-* "PostgreSQL":http://www.postgresql.org/ (if you want to store messages in DB)
-* "pyPgSQL":http://pypgsql.sourceforge.net/ (if you want to store messages in DB)
 * Misty has only been tested on OSX 10.6 and python 2.6
 
 h1. Installation:
 
 # Clone repo in desired directory.
 # Duplicate and rename Misty/settings.py to settings_local.py
-# Change Misty/settings_local.py to match your database & IRC server.
+# Change Misty/settings_local.py to match your IRC server.
 # Type @python Misty/misty_core.py@ in cmd line to start Misty.
 
 h1. Extending:
