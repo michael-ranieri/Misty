@@ -57,6 +57,10 @@ class Misty(irc.IRCClient):
         self.who()
         msg = "Hi! I'm Misty. Nice to meet all of you!"
         self.msg(channel, msg)
+        log.msg('Creating JSON listener.')
+        self.makeProcess("examples/json_pipe.py",
+                         channel,
+                         '')
         
     def userJoined(self, user, channel):
         """Called when another user joins the channel"""
@@ -100,7 +104,7 @@ class Misty(irc.IRCClient):
             return
         
         # Display Help from lighthouse method doc.
-        if re.search('help', msg, re.IGNORECASE):
+        if re.search('help', msg, re.IGNORECASE) and re.search('misty', msg, re.IGNORECASE):
             self.msg(user, "Requirements of message || Result of Isle")
             for isle in self.isles:
                 if isle.__doc__:
@@ -116,23 +120,9 @@ class Misty(irc.IRCClient):
             
             location = isle(params)
             if location:
-            
-                filename = re.search('([^/]+)$', location).group(0)
-            
                 log.msg('Sending msg to Isle at:')
                 log.msg(location)
-                
-                # Initialize Process Controller
-                MistyProcess = MistyProcessController()
-                
-                p = reactor.spawnProcess(
-                    MistyProcess,                       # Process Controller
-                    settings.PATH_TO_MISTY + '/isles/' + location,  # Full Path of Isle
-                    [filename, json.dumps(params)],     # Filename of Isle, JSON parameters
-                    env = _env)                         # ENV to run Isle
-                 
-                isleResult = MistyProcess.deferred
-                isleResult.addCallback(self.callbackMessage, channel)
+                self.makeProcess(location, channel, params)
                 
     # Twisted command extension
     def who(self):
@@ -142,12 +132,21 @@ class Misty(irc.IRCClient):
     def irc_RPL_WHOREPLY(self, prefix, params):
         log.msg(params)
         self.users[params[5]] = params[6]
-                
-    # method to switch callbacks argument ordering
-    def callbackMessage(self, msg, channel):
-        self.msg(channel,msg)  
+        
+    # Spawn a Twisted subprocess
+    def makeProcess(self, location, channel, params):
+        filename = re.search('([^/]+)$', location).group(0)
+        
+        # Initialize Process Controller
+        MistyProcess = MistyProcessController(self.msg, channel)
+        
+        p = reactor.spawnProcess(
+            MistyProcess,                       # Process Controller
+            settings.PATH_TO_MISTY + '/isles/' + location,  # Full Path of Isle
+            [filename, json.dumps(params)],     # Filename of Isle, JSON parameters
+            env = _env)                         # ENV to run Isle
+        
             
-    
 # Creates instances of Misty for each connection
 class MistyFactory(protocol.ClientFactory):
     """A Factory for Misty instances
@@ -180,10 +179,12 @@ class MistyFactory(protocol.ClientFactory):
 class MistyProcessController(protocol.ProcessProtocol):
     """A Process Controller that uses ProcessProtocol to handle pipes asynchronously"""
     
-    def __init__(self):
-        self.data = ""
-        self.errors = ""
-        self.deferred = defer.Deferred()
+    def __init__(self, msg, channel):
+        self.msg = msg
+        self.channel = channel
+        self._buffer = ""
+        self._errors = ""
+        self.delimiter = '\n' #From Twisted protocols.basic
     
     # Misty sends msg through arg instead of Stdin
     # so we immediately tell the process to close Stdin
@@ -193,11 +194,14 @@ class MistyProcessController(protocol.ProcessProtocol):
 
     # outRecieved() is called with the output from each Isle process.
     def outReceived(self, data):
-        self.data += data
+        lines  = (self._buffer+data).split(self.delimiter) #From Twisted protocols.basic
+        self._buffer = lines.pop(-1)
+        for line in lines:
+            self.msg(self.channel, line)
     
     # any errors recieved from Isle process is caught here.
     def errReceived(self, data):
-        self.errors += data
+        self._errors += data
         
     # called when process closes its Stdin
     def inConnectionLost(self):
@@ -219,10 +223,9 @@ class MistyProcessController(protocol.ProcessProtocol):
         log.msg('Subprocess Ended:')
         log.msg(reason)
         
-        if self.errors != "":
-            log.msg(self.errors)
+        if self._errors != "":
+            log.msg(self._errors)
         
-        self.deferred.callback(self.data)
         
 
 if __name__ == '__main__':
@@ -236,6 +239,7 @@ if __name__ == '__main__':
     except:
         temp = ""
     _env['PYTHONPATH'] = str(temp) + str(_dir)
+    _env['PYTHONUNBUFFERED'] = 'True'
     
     # Open file for logging
     log.startLogging(DailyLogFile.fromFullPath(settings.PATH_TO_MISTY + '/message_logs/misty.log'))
