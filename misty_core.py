@@ -72,6 +72,16 @@ class Misty(irc.IRCClient):
         log.msg('%s left %s' % (user, channel))
         self.users[user] = 'G'
         
+    def userQuit(self, user, quitMessage):
+        """Called when I see another user disconnect from the network."""
+        log.msg('%s quit: %s' % (user, quitMessage))
+        self.users[user] = 'G'
+        
+    def userKicked(self, kickee, channel, kicker, message):
+        """Called when I observe someone else being kicked from a channel."""
+        log.msg('%s left %s' % (kickee, channel))
+        self.users[user] = 'G'
+        
     def userRenamed(self, oldname, newname):
         """Called when another user changes their name"""
         log.msg('%s changed name to %s' % (oldname, newname))
