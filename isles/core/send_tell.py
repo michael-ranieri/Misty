@@ -9,7 +9,8 @@ import shelve
 
 def main(params):
     msg, user, channel, users = params
-            
+    
+    user = user.encode('utf-8')
     db = shelve.open('tShelve')
     try:
         temp, db[user] = db[user], []

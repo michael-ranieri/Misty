@@ -18,7 +18,7 @@ def main(params):
             
     db = shelve.open('tShelve')
     try:
-        temp = db[receiver]
+        temp = db[receiver.encode('utf-8')]
     except:
         temp = []
         
@@ -27,7 +27,7 @@ def main(params):
         'msg' : msg
     })
     
-    db[receiver] = temp
+    db[receiver.encode('utf-8')] = temp
     db.close()
     
     print "Don't worry %s! I will make sure to give %s that message." % (user, receiver)
