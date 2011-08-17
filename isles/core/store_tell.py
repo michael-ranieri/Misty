@@ -13,7 +13,7 @@ def main(params):
     receiver, msg = re.split(':', msg, 1)
     
     for k, u in users.iteritems():
-        if receiver == k and re.search('H', u):
+        if receiver == k and re.search('H', u['status']):
             sys.exit(0)
             
     db = shelve.open('tShelve')

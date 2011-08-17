@@ -17,6 +17,17 @@ import settings_local as settings
 
 # Core Isles
 
+# Grabs wiki page
+def wikipedia(params):
+    """'.wik' & term | Searches wikipedia for term"""
+    
+    msg, user, channel, users = params
+    
+    if msg.startswith('.wik'):
+        return "core/wikipedia.py"
+    else:
+        return None
+
 # Calculates user input
 def calculate(params):
     """'.c' || Calculates any argument after '.c'"""
@@ -41,7 +52,18 @@ def search(params):
     else:
         return None
         
-# Tells a message to another user when they log in or return from away
+# Report last time Misty saw a user
+def seen(params):
+    """'.seen' & user || Report last time Misty saw a user."""
+    
+    msg, user, channel, users = params
+    
+    if msg.startswith('.seen'):
+        return "core/seen.py"
+    else:
+        return None
+        
+# Stores a message to send to another user
 def store_tell(params):
     """'offline_user: message' || Stores a message to give to offline user."""
     
@@ -51,20 +73,32 @@ def store_tell(params):
         return "core/store_tell.py"
     else:
         return None
-        
+
+# Gives message to user on first message from receiver
 def send_tell(params):
     return "core/send_tell.py"
+    
+# Shows all outbound messages from user
+def outbox(params):
+    """'.outbox' || Shows outbound messages that have yet to be received"""
+    
+    msg, user, channel, user = params
+    
+    if msg.startswith('.outbox'):
+        return "core/outbox.py"
+    else:
+        return None
     
 # API Isles (Require an api key from respective companies)
 
 # Checks for bugs on Lighthouse Issue Tracking
 def lighthouse(params):
-    """*lighthouse* or *bug* || Return the Lighthouse Tracker URL of the best match."""
+    """.lighthouse* or .bug* || Return the Lighthouse Tracker URL of the best match."""
     
     msg, user, channel, users = params
     
-    if (re.search('bug', msg, re.IGNORECASE) \
-    or re.search('lighthouse', msg, re.IGNORECASE)) \
+    if (msg.startswith('.bug') \
+    or msg.startswith('.lighthouse')) \
     and settings.LIGHTHOUSE_KEY:
         return "api/lighthouseTracking.py"
     else:
@@ -72,33 +106,33 @@ def lighthouse(params):
 
 # Checks Pingdom status of servers.
 def pingdom(params):
-    """*pingdom* || Returns the status of Pingdom checks."""
+    """.pingdom || Returns the status of Pingdom checks."""
     
     msg, user, channel, users = params
     
-    if re.search('pingdom', msg, re.IGNORECASE) and settings.PINGDOM_KEY:
+    if msg.startswith('.pingdom') and settings.PINGDOM_KEY:
         return "api/pingdom.py"
     else:
         return None
     
 # Searches rackspace for msg terms and returns more information about server
 def rackspace(params):
-    """*rackspace* & (*ip* or *name*) || Return information about rackspace server."""
+    """.rackspace & (*ip* or *name*) || Return information about rackspace server."""
     
     msg, user, channel, users = params
     
-    if re.search('rackspace', msg, re.IGNORECASE) and settings.RACKSPACE_KEY:
+    if msg.startswith('.rackspace') and settings.RACKSPACE_KEY:
         return "api/rackspace.py"
     else:
         return None
 
 # Searches Pivotal Tracker project for stories in msg and return a url to it
 def pivotalTracker(params):
-    """*pivotal* *terms* || Return the Pivotal Tracker URL of the best match story."""
+    """.pivotal *terms* || Return the Pivotal Tracker URL of the best match story."""
     
     msg, user, channel, users = params
     
-    if re.search('pivotal', msg, re.IGNORECASE) and settings.PIVOTAL_KEY:
+    if msg.startswith('.pivotal') and settings.PIVOTAL_KEY:
         return "api/pivotalTracker.py"
     else:
         return None
@@ -137,10 +171,13 @@ def json_arg(params):
     
 # Make sure to add your Isle method to isles[] 
 isles = [
+    wikipedia,
     calculate,
     search,
+    seen,
     store_tell,
     send_tell,
+    outbox,
     lighthouse,
     pingdom,
     rackspace,

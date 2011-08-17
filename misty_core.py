@@ -65,28 +65,28 @@ class Misty(irc.IRCClient):
     def userJoined(self, user, channel):
         """Called when another user joins the channel"""
         log.msg('%s joined %s' % (user, channel))
-        self.users[user] = 'H'
+        self.users[user] = {'status' : 'H'}
         
     def userLeft(self, user, channel):
         """Called when another user leaves the channel"""
         log.msg('%s left %s' % (user, channel))
-        self.users[user] = 'G'
+        self.users[user] = {'status' : 'G', 'last_seen' : int(time.time())}
         
     def userQuit(self, user, quitMessage):
         """Called when I see another user disconnect from the network."""
         log.msg('%s quit: %s' % (user, quitMessage))
-        self.users[user] = 'G'
+        self.users[user] = {'status' : 'G', 'last_seen' : int(time.time())}
         
     def userKicked(self, kickee, channel, kicker, message):
         """Called when I observe someone else being kicked from a channel."""
         log.msg('%s left %s' % (kickee, channel))
-        self.users[user] = 'G'
+        self.users[kickee] = {'status' : 'G', 'last_seen' : int(time.time())}
         
     def userRenamed(self, oldname, newname):
         """Called when another user changes their name"""
         log.msg('%s changed name to %s' % (oldname, newname))
-        self.users[oldname] = 'G'
-        self.users[newname] = 'H'
+        self.users[oldname] = {'status' : 'G', 'last_seen' : int(time.time())}
+        self.users[newname] = {'status' : 'H'}
         
     def privmsg(self, user, channel, msg):
         """This will get called when the bot receives a message from IRC server."""
@@ -141,7 +141,7 @@ class Misty(irc.IRCClient):
         
     def irc_RPL_WHOREPLY(self, prefix, params):
         log.msg(params)
-        self.users[params[5]] = params[6]
+        self.users[params[5]] = {'status' : params[6]}
         
     # Spawn a Twisted subprocess
     def makeProcess(self, location, channel, params):
